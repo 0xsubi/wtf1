@@ -9,6 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -20,7 +21,13 @@ var (
 
 func init()  {
 	rand.Seed(time.Now().UnixNano())
-	clientOptions := options.Client().ApplyURI("mongodb://localhost:27017")
+	dbUri := os.Getenv("DB_URI")
+	dbUsername := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+
+	connStr := fmt.Sprintf("mongodb+srv://%s:%s@%s", dbUsername, dbPassword, dbUri)
+	clientOptions := options.Client().ApplyURI(connStr)
+
 	client, err = mongo.Connect(context.TODO(), clientOptions)
 
 	if err != nil {

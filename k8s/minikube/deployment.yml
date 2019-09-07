@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wtf1
+  labels:
+    app: wtf1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wtf1
+  template:
+    metadata:
+      labels:
+        app: wtf1
+    spec:
+      containers:
+        - name: wtf1
+          image: sudhabindu1/wtf1:0.1
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "100Mi"
+              cpu: "10m"
+            limits:
+              memory: "200Mi"
+              cpu: "20m"
+          env:
+            - name: DB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: db-creds
+                  key: db-uri.txt
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-creds
+                  key: db-username.txt
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-creds
+                  key: db-password.txt
+          ports:
+            - containerPort: 8080

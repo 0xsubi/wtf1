@@ -22,8 +22,8 @@ func init()  {
 func main() {
 	r := gin.Default()
 	r.HTMLRender = ginview.Default()
-	r.GET("/", getRandomMessage)
-	r.GET("/index", index)
+	r.GET("/", index)
+	r.GET("/message", getRandomMessage)
 	r.GET("/message/:uid", getMessageWithId)
 	r.POST("/insert", insertMessage)
 	r.GET("/ping", func(c *gin.Context) {

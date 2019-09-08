@@ -46,12 +46,12 @@ func init()  {
 	collection = client.Database("f1").Collection("messages")
 }
 
-func InsertMessage(m *models.RadioMessage) (interface{}, error) {
-	insertResult, err := collection.InsertOne(context.TODO(), *m)
+func InsertMessage(m *models.RadioMessage) error {
+	_, err := collection.InsertOne(context.TODO(), *m)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return insertResult.InsertedID, nil
+	return nil
 }
 
 func FindMessageWithId(uid string) (*models.RadioMessage, error) {

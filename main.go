@@ -43,9 +43,12 @@ func indexHandler(c *gin.Context)  {
 		return
 	}
 
+	permalink := fmt.Sprintf("/message/%s", m.Uid)
+
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"message": m.Message,
 		"link": m.Link,
+		"permalink": permalink,
 		"color": m.Color,
 	})
 	return
@@ -89,11 +92,11 @@ func insertMessage(c *gin.Context)  {
 			c.String(http.StatusBadRequest, "uid should not be sent")
 		}
 		m.Uid = RandStringRunes(10)
-		insertId, err := modules.InsertMessage(&m)
+		err = modules.InsertMessage(&m)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
 		}
-		c.String(http.StatusOK, fmt.Sprintf("created: %v", insertId))
+		c.String(http.StatusOK, fmt.Sprintf("created. uid: %v", m.Uid))
 	}
 }
 

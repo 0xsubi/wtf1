@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"math/rand"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -68,6 +69,11 @@ func indexHandlerWithUid(c *gin.Context)  {
 }
 
 func insertMessage(c *gin.Context)  {
+	token := c.Request.Header.Get("token")
+	if token != os.Getenv("AUTH_TOKEN") {
+		c.String(http.StatusUnauthorized, "User is not authorized")
+		return
+	}
 	if c.Request.Body != nil {
 		b, err := ioutil.ReadAll(c.Request.Body)
 		if err != nil {
@@ -105,6 +111,7 @@ func messageHandler(c *gin.Context)  {
 	return
 
 }
+
 func RandStringRunes(n int) string {
 	b := make([]rune, n)
 	for i := range b {

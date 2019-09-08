@@ -22,9 +22,9 @@ func init()  {
 func main() {
 	r := gin.Default()
 	r.HTMLRender = ginview.Default()
-	r.GET("/", index)
-	r.GET("/message", getRandomMessage)
-	r.GET("/message/:uid", getMessageWithId)
+	r.GET("/", indexHandler)
+	r.GET("/message/:uid", indexHandlerWithUid)
+	r.GET("/json/:uid", messageHandler)
 	r.POST("/insert", insertMessage)
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -34,17 +34,37 @@ func main() {
 	_ = r.Run() // listen and serve on 0.0.0.0:8080
 }
 
-func index(c *gin.Context)  {
+
+func indexHandler(c *gin.Context)  {
 	m, err := modules.FindMessage()
 	if err != nil {
 		c.String(http.StatusNotFound, err.Error())
 		return
 	}
-	c.HTML(http.StatusOK, "page.html", gin.H{
+
+	c.HTML(http.StatusOK, "index.html", gin.H{
 		"message": m.Message,
 		"link": m.Link,
 		"color": m.Color,
 	})
+	return
+}
+
+func indexHandlerWithUid(c *gin.Context)  {
+	uid := c.Param("uid")
+
+	m, err := modules.FindMessageWithId(uid)
+	if err != nil {
+		c.String(http.StatusNotFound, err.Error())
+		return
+	}
+
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"message": m.Message,
+		"link": m.Link,
+		"color": m.Color,
+	})
+	return
 }
 
 func insertMessage(c *gin.Context)  {
@@ -72,21 +92,10 @@ func insertMessage(c *gin.Context)  {
 }
 
 
-func getMessageWithId(c *gin.Context)  {
+func messageHandler(c *gin.Context)  {
 	uid := c.Param("uid")
+
 	m, err := modules.FindMessageWithId(uid)
-	if err != nil {
-		c.String(http.StatusNotFound, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, *m)
-	return
-
-}
-
-func getRandomMessage(c *gin.Context)  {
-	m, err := modules.FindMessage()
 	if err != nil {
 		c.String(http.StatusNotFound, err.Error())
 		return
